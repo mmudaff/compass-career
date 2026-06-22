@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasil Analisis RIASEC - CompassKarir</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .font-syne {
+            font-family: 'Syne', sans-serif;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .glow-cyan {
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.25);
+        }
+
+        .glow-accent {
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.25);
+        }
+
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(135deg, #6366F1 0%, #EC4899 50%, #06B6D4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Glassmorphism effects */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            .print\:grid {
+                display: grid !important;
+            }
+
+            body {
+                background: white;
+                color: black;
+                padding: 0 !important;
+            }
+
+            .glass-card {
+                border: none;
+                box-shadow: none;
+                background: transparent;
+            }
+        }
+    </style>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        syne: ['Syne', 'sans-serif'],
+                    },
+                    colors: {
+                        teen: {
+                            deep: '#0F172A',
+                            accent: '#6366F1',
+                            pink: '#EC4899',
+                            cyan: '#06B6D4',
+                            amber: '#F59E0B',
+                            emerald: '#10B981',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body
+    class="bg-gradient-to-tr from-slate-50 via-indigo-50/30 to-rose-50/20 text-slate-800 font-sans min-h-screen p-4 sm:p-8">
+
+    <section id="screen-results" class="fade-in space-y-8 max-w-5xl mx-auto">
+        <!-- HEADER -->
+        <div
+            class="bg-gradient-to-tr from-teen-deep via-slate-900 to-indigo-950 text-white rounded-[2.5rem] p-8 sm:p-10 shadow-2xl relative overflow-hidden">
+            <div
+                class="absolute right-0 bottom-0 translate-x-8 translate-y-8 opacity-[0.04] text-[200px] font-black font-syne select-none pointer-events-none">
+                CAREER</div>
+            <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div>
+                    <span
+                        class="px-3.5 py-1 bg-white/10 text-teen-cyan rounded-full text-xs font-bold tracking-widest uppercase border border-white/10">✨
+                        Karirmu Terungkap!</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold mt-3 font-syne text-white tracking-tight">Peta
+                        Kekuatan Karirmu</h2>
+                    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-xs text-slate-300">
+                        <div><span class="text-slate-400 font-semibold uppercase tracking-wider mr-1">Nama:</span> <span
+                                id="res-nama" class="font-bold text-white text-sm"></span></div>
+                        <div><span class="text-slate-400 font-semibold uppercase tracking-wider mr-1">Kelas /
+                                Jurusan:</span> <span id="res-kelas-jurusan"
+                                class="font-bold text-white text-sm"></span></div>
+                        <div><span class="text-slate-400 font-semibold uppercase tracking-wider mr-1">Sekolah:</span>
+                            <span id="res-sekolah" class="font-bold text-white text-sm"></span>
+                        </div>
+                        <div><span class="text-slate-400 font-semibold uppercase tracking-wider mr-1">Tanggal
+                                Pelaksanaan:</span> <span id="res-tanggal" class="font-bold text-white text-sm"></span>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="bg-white/10 backdrop-blur-md p-6 rounded-3xl border border-white/10 text-center w-full md:w-auto flex-shrink-0">
+                    <span class="text-slate-300 text-[10px] font-bold uppercase tracking-widest block mb-1">Tipe
+                        Dominan</span>
+                    <span id="dominant-code"
+                        class="text-4xl font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-teen-cyan via-teen-pink to-teen-amber font-syne">---</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRAPHS -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div
+                class="lg:col-span-7 bg-white p-6 sm:p-8 rounded-[2rem] shadow-xl border border-slate-100 flex flex-col justify-between">
+                <div>
+                    <h3 class="font-syne font-extrabold text-slate-900 text-lg">Diagram Karakter RIASEC</h3>
+                    <p class="text-xs text-slate-400">Peta visual skor kecenderungan minat belajarmu.</p>
+                </div>
+                <div class="my-6 h-64 sm:h-72 relative flex items-center justify-center">
+                    <canvas id="riasec-radar-chart"></canvas>
+                </div>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-center">
+                    <p class="text-[10px] text-slate-400 font-medium italic">Skor maksimal per kategori adalah 35
+                        poin.</p>
+                </div>
+            </div>
+
+            <div
+                class="lg:col-span-5 bg-white p-6 sm:p-8 rounded-[2rem] shadow-xl border border-slate-100 flex flex-col justify-between">
+                <div>
+                    <h3 class="font-syne font-extrabold text-slate-900 text-lg mb-1">Skor Kamu</h3>
+                    <p class="text-xs text-slate-400 mb-4">Urutan kecocokan kategori minatmu:</p>
+                </div>
+                <div id="scores-list" class="space-y-4 flex-grow flex flex-col justify-center">
+                </div>
+            </div>
+        </div>
+
+        <!-- ANALYSIS -->
+        <div class="bg-white p-6 sm:p-10 rounded-[2.5rem] shadow-xl border border-slate-100 space-y-8">
+            <div class="border-b border-slate-100 pb-5">
+                <h3 class="font-syne font-extrabold text-slate-900 text-2xl flex items-center gap-2">
+                    🌟 Analisis Minat & Karir Terkece
+                </h3>
+                <p class="text-sm text-slate-500">Membaca potensi dominanmu dalam belajar dan berkarir nanti.</p>
+            </div>
+
+            <div id="profile-detailed-descriptions" class="space-y-6">
+            </div>
+
+            <div class="bg-indigo-50/40 rounded-3xl p-6 sm:p-8 border border-indigo-100/50">
+                <h4 class="font-syne font-extrabold text-slate-900 text-base mb-4 flex items-center gap-2">
+                    🚀 Bidang Pekerjaan & Jurusan Kuliah Terpilih:
+                </h4>
+                <div id="career-recommendation-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                </div>
+            </div>
+        </div>
+
+        <!-- PRINT SIGNATURE -->
+        <div
+            class="hidden print:grid bg-white pt-10 border-t border-slate-200 grid-cols-2 gap-8 text-center mt-12 text-sm">
+            <div>
+                <p class="mb-16 font-semibold">Konselor / Guru BK</p>
+                <div class="w-48 mx-auto border-b border-slate-800"></div>
+                <p class="text-xs text-slate-400 mt-1">NIP/Nama Jelas</p>
+            </div>
+            <div>
+                <p class="mb-16 font-semibold">Siswa Peserta</p>
+                <div id="print-signature-student-name" class="w-48 mx-auto border-b border-slate-800 font-bold"></div>
+                <p class="text-xs text-slate-400 mt-1">Tanda Tangan & Nama Lengkap</p>
+            </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div
+            class="flex flex-col sm:flex-row gap-4 justify-between items-center bg-slate-100/60 p-4 rounded-3xl no-print">
+            <button onclick="window.close()"
+                class="text-slate-500 hover:text-rose-500 font-bold py-2.5 px-5 rounded-xl transition duration-150 inline-flex items-center gap-1.5 text-xs uppercase tracking-wider">
+                <i class="fa-solid fa-arrow-left"></i> Tutup Halaman
+            </button>
+            <!-- <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                <button onclick="window.print()"
+                    class="bg-white hover:bg-slate-50 text-slate-700 font-bold py-3.5 px-6 rounded-2xl shadow-sm border border-slate-200 transition duration-150 flex items-center justify-center gap-2 text-xs uppercase tracking-wider">
+                    <i class="fa-solid fa-print"></i> Cetak PDF Laporan
+                </button>
+            </div> -->
+        </div>
+    </section>
+
+    <script>
+        let chartInstance = null;
+
+        const riasecInfo = {
+            "Realistic": {
+                name: "Realistik (The Doers)",
+                color: "bg-rose-500",
+                textColor: "text-rose-600",
+                borderColor: "border-rose-200",
+                badgeClass: "bg-rose-50 text-rose-700 border border-rose-200",
+                icon: "fa-solid fa-screwdriver-wrench",
+                desc: "Kamu adalah tipe orang yang praktis, konkret, dan tangguh! Kamu lebih suka belajar dengan praktik langsung (hands-on) di lapangan dibanding duduk menghafal teori. Suka merakit, membongkar benda, berolahraga fisik, atau menggunakan instrumen teknologi modern.",
+                careers: ["Teknik Elektro / Mesin / Robotik", "Spesialis Hardware & Jaringan IT", "Arsitek Lapangan", "Pilot / Ahli Navigasi", "Desainer Mekatronika", "Fotografer & Videografer Lapangan"]
+            },
+            "Investigative": {
+                name: "Investigatif (The Thinkers)",
+                color: "bg-blue-500",
+                textColor: "text-blue-600",
+                borderColor: "border-blue-200",
+                badgeClass: "bg-blue-50 text-blue-700 border border-blue-200",
+                icon: "fa-solid fa-brain",
+                desc: "Kamu adalah si pemikir kritis, analitis, dan memiliki rasa penasaran yang luar biasa! Pertanyaan favoritmu adalah 'mengapa' dan 'bagaimana'. Sangat menikmati riset, memecahkan teka-teki logika, menulis kode pemrograman, atau menganalisis data sains.",
+                careers: ["Programmer & Data Scientist", "Dokter / Tenaga Medis", "Peneliti / Ilmuwan (Sains & Sosial)", "Analis Sistem & Keamanan Siber", "Astronom & Ahli Matematika", "Psikolog Riset"]
+            },
+            "Artistik": {
+                name: "Artistik (The Creators)",
+                color: "bg-pink-500",
+                textColor: "text-pink-600",
+                borderColor: "border-pink-200",
+                badgeClass: "bg-pink-50 text-pink-700 border border-pink-200",
+                icon: "fa-solid fa-palette",
+                desc: "Kamu adalah jiwa yang merdeka, penuh imajinasi, ekspresif, dan berjiwa seni tinggi! Kamu ga betah dengan rutinitas monoton yang kaku. Lebih memilih ruang bebas untuk menciptakan inovasi visual, tulisan kreatif, bermusik, atau mendesain sesuatu yang estetik.",
+                careers: ["Desain Grafis / UI/UX Designer", "Content Creator & Copywriter", "Arsitek & Desainer Interior", "Sutradara / Animator 3D", "Penerjemah & Penulis Skenario", "Fashion Designer / Kurator Seni"]
+            },
+            "Social": {
+                name: "Sosial (The Helpers)",
+                color: "bg-emerald-500",
+                textColor: "text-emerald-600",
+                borderColor: "border-emerald-200",
+                badgeClass: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+                icon: "fa-solid fa-heart-pulse",
+                desc: "Kamu adalah pendengar yang super baik, penuh empati, dan suka menolong sesama! Bagimu, kesuksesan terbesar adalah saat bisa membawa perubahan positif bagi orang lain. Sangat berbakat mengajar, melatih, membimbing, atau menjadi penengah masalah.",
+                careers: ["Psikolog Klinis & Konselor BK", "Guru / Dosen Inspiratif", "Pekerja Sosial & Hubungan Internasional", "Terapis Medis / Perawat", "Customer Success / HRD", "Pegiat Komunitas & LSM"]
+            },
+            "Enterprising": {
+                name: "Enterprising (The Persuaders)",
+                color: "bg-amber-500",
+                textColor: "text-amber-600",
+                borderColor: "border-amber-200",
+                badgeClass: "bg-amber-50 text-amber-700 border border-amber-200",
+                icon: "fa-solid fa-fire-flame-curved",
+                desc: "Kamu adalah calon pemimpin masa depan yang karismatik, penuh percaya diri, dan jago negosiasi! Kamu berani mengambil risiko, pandai meyakinkan orang lain dengan bicaramu, dan selalu mengincar kemajuan yang dinamis serta punya target jelas.",
+                careers: ["Wirausaha / CEO Startup", "Manajer Pemasaran & Strategis Sales", "Public Relations & Juru Bicara", "Pengacara / Konsultan Hukum", "Investment Banker", "Project Manager"]
+            },
+            "Conventional": {
+                name: "Konvensional (The Organizers)",
+                color: "bg-cyan-500",
+                textColor: "text-cyan-600",
+                borderColor: "border-cyan-200",
+                badgeClass: "bg-cyan-50 text-cyan-700 border border-cyan-200",
+                icon: "fa-solid fa-signature",
+                desc: "Kamu adalah raja/ratu keteraturan yang sangat teliti, rapi, dan terorganisir dengan sempurna! Kamu mencintai data, akurasi, dan struktur kerja yang jelas. Sangat andal dalam mengelola sistem administrasi, menghitung keuangan, dan mengarsip dokumen penting.",
+                careers: ["Akuntan Publik & Auditor", "Staff Administrasi & HR Operations", "Data Analyst & Database Administrator", "Aktuaris & Analis Risiko", "Manajer Inventaris", "Konsultan Pajak / Bea Cukai"]
+            }
+        };
+
+        window.onload = function () {
+            const params = new URLSearchParams(window.location.search);
+            const dataRaw = params.get('data');
+
+            if (!dataRaw) {
+                alert("Data tidak ditemukan!");
+                return;
+            }
+
+            const { studentData, userAnswers, questions } = JSON.parse(decodeURIComponent(dataRaw));
+            let scores = { Realistic: 0, Investigative: 0, Artistik: 0, Social: 0, Enterprising: 0, Conventional: 0 };
+
+            // Robust function to get answer value by 1-based question ID
+            function getAnswerValue(qId) {
+                if (!userAnswers) return 0;
+                if (Array.isArray(userAnswers)) {
+                    if (userAnswers.length === 42) {
+                        return parseInt(userAnswers[qId - 1] || 0);
+                    }
+                    return parseInt(userAnswers[qId] || 0);
+                }
+                return parseInt(userAnswers[qId] || userAnswers[String(qId)] || 0);
+            }
+
+            // Calculate scores based on the 42 items mapped to categories
+            const riasecCategories = [
+                { category: "Realistic", range: [1, 7] },
+                { category: "Investigative", range: [8, 14] },
+                { category: "Artistik", range: [15, 21] },
+                { category: "Social", range: [22, 28] },
+                { category: "Enterprising", range: [29, 35] },
+                { category: "Conventional", range: [36, 42] }
+            ];
+
+            riasecCategories.forEach(cat => {
+                for (let qId = cat.range[0]; qId <= cat.range[1]; qId++) {
+                    scores[cat.category] += getAnswerValue(qId);
+                }
+            });
+
+            let sortedCategories = Object.keys(scores).map(key => ({
+                key: key,
+                score: scores[key],
+                ...riasecInfo[key]
+            })).sort((a, b) => b.score - a.score);
+
+            const dominantCode = sortedCategories.slice(0, 3).map(item => item.key[0]).join('-');
+
+            // Render Biodata
+            document.getElementById('res-nama').innerText = studentData.nama || "-";
+            document.getElementById('res-kelas-jurusan').innerText = `${studentData.kelas || "-"} / ${studentData.jurusan || "-"}`;
+            document.getElementById('res-sekolah').innerText = studentData.sekolah || "-";
+
+            const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+            const dateStr = studentData.tanggal || studentData.timestamp;
+            const parsedDate = dateStr ? new Date(dateStr) : new Date();
+            document.getElementById('res-tanggal').innerText = isNaN(parsedDate) ? (dateStr || "-") : parsedDate.toLocaleDateString('id-ID', dateOptions);
+
+            document.getElementById('dominant-code').innerText = dominantCode;
+            document.getElementById('print-signature-student-name').innerText = studentData.nama || "";
+
+            // Render Radar Chart
+            renderRadarChartVisual(scores);
+
+            // Render Scores Bars
+            renderDetailedBreakdownScoreBars(sortedCategories);
+
+            // Render Detailed Descriptions
+            renderDominantDescriptions(sortedCategories);
+
+            // Render Study and Career Recommendations
+            renderStudyAndCareerRecommendations(sortedCategories);
+        };
+
+        function renderRadarChartVisual(scores) {
+            const ctx = document.getElementById('riasec-radar-chart').getContext('2d');
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Realistik', 'Investigatif', 'Artistik', 'Sosial', 'Enterprising', 'Konvensional'],
+                    datasets: [{
+                        label: 'Kekuatan Minat Karir',
+                        data: [
+                            scores.Realistic,
+                            scores.Investigative,
+                            scores.Artistik,
+                            scores.Social,
+                            scores.Enterprising,
+                            scores.Conventional
+                        ],
+                        backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                        borderColor: '#6366F1',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#EC4899',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#06B6D4'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: '#f1f5f9' },
+                            grid: { color: '#e2e8f0' },
+                            suggestedMin: 0,
+                            suggestedMax: 35,
+                            ticks: {
+                                stepSize: 5,
+                                backdropColor: 'transparent',
+                                color: '#94a3b8',
+                                font: { size: 9 }
+                            },
+                            pointLabels: {
+                                font: { size: 11, weight: 'bold', family: 'Plus Jakarta Sans' },
+                                color: '#1e293b'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        function renderDetailedBreakdownScoreBars(sortedCategories) {
+            const container = document.getElementById('scores-list');
+            container.innerHTML = "";
+
+            sortedCategories.forEach(cat => {
+                const percent = (cat.score / 35) * 100;
+                const barHtml = `
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="font-bold text-slate-800 flex items-center gap-2">
+                                <i class="${cat.icon} ${cat.textColor} text-sm"></i> ${cat.name}
+                            </span>
+                            <span class="font-extrabold text-slate-700">${cat.score} <span class="text-[10px] text-slate-400 font-medium">/ 35 pt</span></span>
+                        </div>
+                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div class="h-full ${cat.color} rounded-full" style="width: ${percent}%"></div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += barHtml;
+            });
+        }
+
+        function renderDominantDescriptions(sortedCategories) {
+            const container = document.getElementById('profile-detailed-descriptions');
+            container.innerHTML = "";
+
+            const topProfiles = sortedCategories.slice(0, 2);
+            topProfiles.forEach((cat, index) => {
+                const badgeTitle = index === 0 ? "Dominan Utama" : "Kecenderungan Kedua";
+                const badgeStyle = index === 0 ? "bg-gradient-to-r from-teen-accent to-teen-pink text-white" : "bg-slate-100 text-slate-700 border border-slate-200";
+
+                const descHtml = `
+                    <div class="p-6 rounded-2xl border-2 ${index === 0 ? 'border-indigo-100 bg-indigo-50/10' : 'border-slate-100 bg-slate-50/30'} space-y-3">
+                        <div class="flex items-center gap-2.5">
+                            <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider ${badgeStyle}">${badgeTitle}</span>
+                            <h4 class="font-syne font-extrabold text-slate-900 text-base sm:text-lg flex items-center gap-1.5">
+                                <i class="${cat.icon} ${cat.textColor}"></i> ${cat.name}
+                            </h4>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">${cat.desc}</p>
+                    </div>
+                `;
+                container.innerHTML += descHtml;
+            });
+        }
+
+        function renderStudyAndCareerRecommendations(sortedCategories) {
+            const container = document.getElementById('career-recommendation-list');
+            container.innerHTML = "";
+
+            const topThree = sortedCategories.slice(0, 3);
+            topThree.forEach(cat => {
+                const card = `
+                    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-xl ${cat.color} text-white flex items-center justify-center text-xs shadow-sm">
+                                <i class="${cat.icon}"></i>
+                            </div>
+                            <span class="text-xs font-extrabold text-slate-800 uppercase tracking-wider font-syne">${cat.name}</span>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5 pt-1">
+                            ${cat.careers.map(car => `<span class="bg-indigo-50/50 hover:bg-indigo-50 text-indigo-700 border border-indigo-100/30 text-[10px] px-2.5 py-1.5 rounded-lg font-bold transition">${car}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += card;
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - CompassKarir</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        syne: ['Syne', 'sans-serif'],
+                    },
+                    colors: {
+                        teen: {
+                            deep: '#0F172A',
+                            accent: '#6366F1',
+                            pink: '#EC4899',
+                            cyan: '#06B6D4',
+                            amber: '#F59E0B',
+                            emerald: '#10B981',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-slate-50 min-h-screen font-sans antialiased pb-12">
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+
+        <div
+            class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-slate-200 pb-6 mb-8 gap-4">
+            <div class="flex items-center gap-3.5">
+                <div
+                    class="bg-gradient-to-tr from-teen-accent to-teen-pink text-white w-11 h-11 rounded-2xl shadow-lg shadow-indigo-100 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-rocket text-base animate-bounce"></i>
+                </div>
+                <div>
+                    <h1
+                        class="font-syne font-extrabold text-2xl tracking-tight bg-gradient-to-r from-teen-accent to-teen-pink bg-clip-text text-transparent leading-tight">
+                        CompassKarir Admin
+                    </h1>
+                    <p class="text-slate-500 text-xs mt-0.5 font-medium">Dashboard Pemantauan Hasil Analisis RIASEC
+                        Siswa</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3 self-start md:self-auto w-full md:w-auto justify-end">
+                <div class="relative flex-1 sm:flex-initial">
+                    <select id="filter-jurusan" onchange="updateKelasOptions()"
+                        class="w-full appearance-none bg-white border border-slate-200 rounded-xl pl-4 pr-10 py-2.5 text-sm font-bold text-slate-700 outline-none focus:border-teen-accent focus:ring-2 focus:ring-teen-accent/20 transition-all cursor-pointer shadow-sm min-w-[150px]">
+                        <option value="ALL">Semua Jurusan</option>
+                    </select>
+                    <i
+                        class="fa-solid fa-graduation-cap absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                </div>
+
+                <div class="relative flex-1 sm:flex-initial">
+                    <select id="filter-kelas" onchange="applyCombinedFilter()"
+                        class="w-full appearance-none bg-white border border-slate-200 rounded-xl pl-4 pr-10 py-2.5 text-sm font-bold text-slate-700 outline-none focus:border-teen-accent focus:ring-2 focus:ring-teen-accent/20 transition-all cursor-pointer shadow-sm min-w-[150px]">
+                        <option value="ALL">Semua Kelas</option>
+                    </select>
+                    <i
+                        class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                </div>
+
+                <button onclick="fetchAdminData()"
+                    class="bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 p-2.5 rounded-xl transition-all shadow-sm flex items-center justify-center group shrink-0"
+                    title="Segarkan Data">
+                    <i class="fa-solid fa-arrows-rotate group-hover:rotate-180 transition-all duration-500"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="loading-state"
+            class="flex flex-col items-center justify-center py-24 bg-white rounded-2xl border border-slate-100 shadow-sm transition-all duration-300">
+            <div class="flex flex-col items-center justify-center">
+                <div class="relative w-14 h-14 mb-4">
+                    <div class="absolute inset-0 rounded-full border-4 border-slate-100"></div>
+                    <div
+                        class="absolute inset-0 rounded-full border-4 border-teen-accent border-t-transparent animate-spin">
+                    </div>
+                </div>
+                <p class="font-bold text-slate-600 animate-pulse tracking-wide text-sm">Memuat arsip data survey dari
+                    Google Sheet...</p>
+            </div>
+        </div>
+
+        <div id="table-container"
+            class="hidden bg-white rounded-2xl border border-slate-100 shadow-md overflow-hidden transition-all duration-300">
+            <div class="overflow-x-auto">
+                <table id="data-table" class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gradient-to-r from-teen-accent to-teen-pink text-white shadow-sm">
+                            <th class="p-4 text-xs font-extrabold uppercase tracking-wider rounded-tl-2xl">Waktu
+                                Pengisian</th>
+                            <th class="p-4 text-xs font-extrabold uppercase tracking-wider">Nama Lengkap</th>
+                            <th class="p-4 text-xs font-extrabold uppercase tracking-wider">Kelas</th>
+                            <th class="p-4 text-xs font-extrabold uppercase tracking-wider">Jurusan</th>
+                            <th class="p-4 text-xs font-extrabold uppercase tracking-wider">Progress</th>
+                            <th class="p-4 text-xs font-extrabold uppercase tracking-wider rounded-tr-2xl text-center">
+                                Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body" class="divide-y divide-slate-100 text-sm text-slate-700">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="toast-message"
+        class="fixed bottom-6 right-6 flex items-center gap-3 bg-white border border-slate-100 px-5 py-4 rounded-xl shadow-xl translate-y-24 opacity-0 transition-all duration-300 z-50">
+        <div id="toast-icon-box"></div>
+        <span id="toast-text" class="text-sm font-bold text-slate-800"></span>
+    </div>
+
+    <script>
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyqpzwe9Azpbg_pD0D37VtA3_-AexdOkuCtK-H8qvUGpraJtcl3_cevkYEjdfzFFsOY/exec";
+        let cacheData = [];
+
+        const SOAL_RIASEC = [
+            "Saya lebih suka mengikuti ekstrakurikuler yang melibatkan aktivitas fisik di luar ruangan.",
+            "Saya tertarik mempelajari cara kerja alat teknologi seperti komputer, robot, atau kendaraan.",
+            "Saya senang memperbaiki barang-barang rusak di rumah atau sekolah.",
+            "Saya lebih memilih pelajaran yang banyak praktik daripada hanya teori di kelas.",
+            "Saya senang membuat karya tangan seperti kerajinan, model, atau proyek sederhana.",
+            "Saya merasa puas ketika berhasil menyelesaikan tugas yang membutuhkan ketelitian dan keterampilan fisik.",
+            "Saya ingin bekerja di bidang yang melibatkan aktivitas lapangan atau pekerjaan teknis setelah lulus nanti.",
+            "Saya suka menganalisis data dari tugas atau proyek untuk menemukan pola dan kesimpulan.",
+            "Saya merasa tertantang ketika mengerjakan soal-soal yang membutuhkan pemikiran logis dan kritis.",
+            "Saya senang membaca artikel atau berita yang membahas penemuan dan teknologi baru.",
+            "Saya lebih suka belajar dengan cara eksperimen dan observasi daripada hanya menghafal.",
+            "Saya sering bertanya \"mengapa\" and \"bagaimana\" terhadap fenomena yang saya pelajari.",
+            "Saya senang berdiskusi tentang ide-ide baru atau teori yang sedang dipelajari di kelas.",
+            "Saya ingin melanjutkan studi ke jurusan yang memungkinkan saya melakukan penelitian atau analisis mendalam.",
+            "Saya senang mengekspresikan diri melalui seni seperti menggambar, musik, menari, atau menulis kreatif.",
+            "Saya tertarik mengikuti ekstrakurikuler seni, teater, atau produksi konten kreatif di sekolah.",
+            "Saya suka memperhatikan estetika dalam presentasi, desain poster, atau tampilan karya sekolah.",
+            "Saya tertarik mengembangkan portofolio karya seni atau konten kreatif untuk masa depan.",
+            "Saya lebih termotivasi oleh apresiasi terhadap kreativitas saya daripada sekadar nilai angka.",
+            "Saya sering mengikuti pameran, pertunjukan, atau festival seni untuk memperluas wawasan.",
+            "Saya ingin berkarir di bidang yang memungkinkan saya mengekspresikan kreativitas dan ide orisinal.",
+            "Saya senang membantu teman yang kesulitan memahami pelajaran atau menghadapi masalah pribadi.",
+            "Saya tertarik mengikuti kegiatan relawan, bakti sosial, atau program kepedulian di sekolah.",
+            "Saya lebih suka bekerja dalam kelompok yang mengutamakan kerja sama dan saling mendukung.",
+            "Saya tertarik pada kegiatan yang melibatkan interaksi dengan masyarakat atau anak-anak.",
+            "Saya sering menjadi mediator atau penengah ketika ada konflik antar teman.",
+            "Saya senang mengorganisir acara sekolah yang bertujuan membantu atau mengedukasi orang lain.",
+            "Saya ingin berkarir di bidang yang memungkinkan saya membantu dan mengembangkan potensi orang lain.",
+            "Saya lebih suka tugas yang memiliki target jelas dan kesempatan untuk menunjukkan pencapaian.",
+            "Saya tidak ragu mengambil inisiatif untuk memulai proyek atau kegiatan baru di sekolah.",
+            "Saya sering melihat peluang untuk memperbaiki atau mengembangkan kegiatan yang sudah ada.",
+            "Saya nyaman bernegosiasi dan mencari solusi yang menguntungkan semua pihak dalam kerja sama.",
+            "Saya termotivasi oleh pengakuan, penghargaan, atau kesempatan untuk berkembang.",
+            "Saya tertarik mempelajari kewirausahaan, pemasaran, atau manajemen untuk masa depan.",
+            "Saya ingin berkarir di bidang yang memungkinkan saya memimpin, berinovasi, dan mencapai target.",
+            "Saya senang mengerjakan tugas yang membutuhkan ketelitian seperti menghitung, mencatat, atau mengorganisir data.",
+            "Saya teliti dalam memeriksa pekerjaan sendiri agar terhindar dari kesalahan kecil.",
+            "Saya tertarik pada pelajaran atau kegiatan yang melibatkan pengelolaan informasi dan administrasi.",
+            "Saya merasa nyaman mengikuti prosedur atau langkah-langkah yang sudah ditentukan dalam mengerjakan tugas.",
+            "Saya suka membuat catatan rapi, tabel, atau diagram untuk mempermudah pemahaman materi.",
+            "Saya lebih memilih tugas yang memiliki kriteria penilaian jelas dan objektif.",
+            "Saya ingin berkarir di bidang yang membutuhkan keteraturan, akurasi, dan manajemen sistem yang baik."
+        ];
+
+
+        const OPSI_JAWABAN = {
+            1: "Gak Banget",
+            2: "Kurang Cocok",
+            3: "Biasa Aja",
+            4: "Boleh Juga",
+            5: "Gue Banget"
+        };
+
+        function fetchAdminData() {
+            document.getElementById('loading-state').style.display = 'flex';
+            document.getElementById('table-container').style.display = 'none';
+
+            fetch(GAS_WEB_APP_URL, {
+                method: 'GET',
+                redirect: 'follow'
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error("Gagal mengambil data dari server");
+                    return res.json();
+                })
+                .then(data => {
+                    cacheData = data;
+                    populateJurusanOptions(data);
+                    updateKelasOptions();
+                    showToast("Data dashboard berhasil diperbarui! 🔄", "success");
+                })
+                .catch(err => {
+                    console.error(err);
+                    showToast("Error: " + err.message, "error");
+                });
+        }
+
+        function populateJurusanOptions(data) {
+            const jurusanSelect = document.getElementById('filter-jurusan');
+            const jurusanList = [...new Set(data.map(item => item.jurusan ? item.jurusan.toString().trim() : ''))].filter(Boolean).sort();
+
+            jurusanSelect.innerHTML = '<option value="ALL">Semua Jurusan</option>';
+            jurusanList.forEach(jur => {
+                const opt = document.createElement('option');
+                opt.value = jur;
+                opt.innerText = jur;
+                jurusanSelect.appendChild(opt);
+            });
+        }
+
+        function updateKelasOptions() {
+            const selectedJurusan = document.getElementById('filter-jurusan').value;
+            const filterKelasSelect = document.getElementById('filter-kelas'); // Ini variabel yang benar
+
+            let filteredDataForKelas = cacheData;
+            if (selectedJurusan !== "ALL") {
+                filteredDataForKelas = cacheData.filter(item => item.jurusan && item.jurusan.toString().trim() === selectedJurusan);
+            }
+
+            const kelasList = [...new Set(filteredDataForKelas.map(item => item.kelas ? item.kelas.toString().trim() : ''))].filter(Boolean).sort();
+
+            filterKelasSelect.innerHTML = '<option value="ALL">Semua Kelas</option>'; // Gunakan variabel yang benar
+            kelasList.forEach(kelas => {
+                const opt = document.createElement('option');
+                opt.value = kelas;
+                opt.innerText = kelas;
+                filterKelasSelect.appendChild(opt); // Gunakan variabel yang benar
+            });
+
+            applyCombinedFilter();
+        }
+
+        function applyCombinedFilter() {
+            const selectedJurusan = document.getElementById('filter-jurusan').value;
+            const selectedKelas = document.getElementById('filter-kelas').value;
+
+            let finalFilteredData = cacheData;
+
+            if (selectedJurusan !== "ALL") {
+                finalFilteredData = finalFilteredData.filter(item => item.jurusan && item.jurusan.toString().trim() === selectedJurusan);
+            }
+            if (selectedKelas !== "ALL") {
+                finalFilteredData = finalFilteredData.filter(item => item.kelas && item.kelas.toString().trim() === selectedKelas);
+            }
+
+            renderTable(finalFilteredData);
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-12 text-center text-slate-400 font-medium">Tidak ada data.</td></tr>`;
+                return;
+            }
+
+            data.forEach((row, rowIndex) => {
+                const formattedDate = new Date(row.timestamp).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+                const kelasRaw = row.kelas ? row.kelas.toString().trim() : '-';
+                const kelasUpper = kelasRaw.toUpperCase();
+
+                let badgeClass = "bg-slate-100 text-slate-700 border border-slate-200";
+                if (kelasUpper.startsWith('X') && !kelasUpper.startsWith('XI') && !kelasUpper.startsWith('XII')) {
+                    badgeClass = "bg-indigo-50 text-indigo-700 border border-indigo-100";
+                } else if (kelasUpper.startsWith('XI')) {
+                    badgeClass = "bg-cyan-50 text-cyan-700 border border-cyan-100";
+                } else if (kelasUpper.startsWith('XII')) {
+                    badgeClass = "bg-emerald-50 text-emerald-700 border border-emerald-100";
+                }
+
+                const itemsAnswered = row.answers ? row.answers.length : 0;
+                let progressBadge = "bg-rose-50 text-rose-700 border border-rose-100";
+                if (itemsAnswered === 42) progressBadge = "bg-emerald-50 text-emerald-700 border border-emerald-100 font-bold";
+
+                // BARIS UTAMA (Siswa)
+                const trMain = document.createElement('tr');
+                trMain.className = "hover:bg-slate-50/80 transition-colors";
+                trMain.innerHTML = `
+                <td class="p-4 text-slate-500 font-medium whitespace-nowrap">${formattedDate}</td>
+                <td class="p-4 font-bold text-slate-900">${row.nama || '-'}</td>
+                <td class="p-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-lg text-xs font-extrabold inline-block ${badgeClass}">${kelasRaw}</span></td>
+                <td class="p-4 font-semibold text-slate-600">${row.jurusan || '-'}</td>
+                <td class="p-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-lg text-xs ${progressBadge}">${itemsAnswered} / 42 Item</span></td>
+                <td class="p-4 text-center whitespace-nowrap">
+                    <div class="flex items-center justify-center gap-2">
+                        <button onclick="toggleRowDetail(${rowIndex})" class="bg-slate-100 hover:bg-teen-accent text-slate-600 hover:text-white w-8 h-8 rounded-lg transition-all flex items-center justify-center" title="Lihat Detail">
+                            <i id="icon-btn-${rowIndex}" class="fa-solid fa-chevron-down text-xs"></i>
+                        </button>
+                        
+                        <button onclick="openResultPage(${rowIndex})" class="bg-slate-100 hover:bg-teen-pink text-slate-600 hover:text-white w-8 h-8 rounded-lg transition-all flex items-center justify-center" title="Lihat Hasil Detail">
+    <i class="fa-solid fa-chart-line text-xs"></i>
+</button>
+                    </div>
+                </td>
+            `;
+                tbody.appendChild(trMain);
+
+                // BARIS TERSEMBUNYI (Accordion Detail Jawaban Soal)
+                const trDetail = document.createElement('tr');
+                trDetail.id = `detail-row-${rowIndex}`;
+                trDetail.className = "hidden bg-slate-50/50";
+
+                // Generate list item jawaban di dalam kontainer accordion
+                let listSoalHTML = "";
+                for (let i = 0; i < 42; i++) {
+                    const nomorSoal = i + 1;
+                    const teksSoal = SOAL_RIASEC[i] || `Pertanyaan nomor ${nomorSoal} (Silakan isi variabel SOAL_RIASEC)`;
+                    const nilaiJawaban = row.answers && row.answers[i] !== undefined ? row.answers[i] : null;
+                    const teksJawaban = OPSI_JAWABAN[nilaiJawaban] || "Belum Dijawab / Kosong";
+
+                    // Beri warna latar belakang badge jawaban sesuai tinggi nilai skornya
+                    let skorColor = "bg-slate-200 text-slate-700";
+                    if (nilaiJawaban >= 4) skorColor = "bg-emerald-100 text-emerald-800 font-bold";
+                    if (nilaiJawaban <= 2 && nilaiJawaban !== null) skorColor = "bg-rose-100 text-rose-800";
+
+                    listSoalHTML += `
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200/60 py-2.5 gap-2 text-xs">
+                        <div class="max-w-3xl">
+                            <span class="font-bold text-slate-400 mr-1">#${nomorSoal}</span> 
+                            <span class="text-slate-700 font-medium">${teksSoal}</span>
+                        </div>
+                        <div class="shrink-0">
+                            <span class="px-2.5 py-1 rounded-md text-[11px] uppercase ${skorColor}">
+                                Skor ${nilaiJawaban || 0} : ${teksJawaban}
+                            </span>
+                        </div>
+                    </div>
+                `;
+                }
+
+                trDetail.innerHTML = `
+                <td colspan="6" class="p-6">
+                    <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-inner max-h-[400px] overflow-y-auto divide-y divide-slate-100">
+                        <h4 class="font-syne font-extrabold text-sm text-teen-deep mb-4 flex items-center gap-2 border-b border-slate-200 pb-2">
+                            <i class="fa-solid fa-clipboard-list text-teen-accent"></i> Rincian Lembar Jawaban: ${row.nama}
+                        </h4>
+                        ${listSoalHTML}
+                    </div>
+                </td>
+            `;
+                tbody.appendChild(trDetail);
+            });
+
+            document.getElementById('loading-state').style.display = 'none';
+            document.getElementById('table-container').style.display = 'block';
+        }
+
+        // Fungsi Pengendali Buka-Tutup Baris Detail
+        function toggleRowDetail(index) {
+            const detailRow = document.getElementById(`detail-row-${index}`);
+            const iconBtn = document.getElementById(`icon-btn-${index}`);
+
+            if (detailRow.classList.contains('hidden')) {
+                detailRow.classList.remove('hidden');
+                iconBtn.classList.remove('fa-chevron-down');
+                iconBtn.classList.add('fa-chevron-up');
+            } else {
+                detailRow.classList.add('hidden');
+                iconBtn.classList.remove('fa-chevron-up');
+                iconBtn.classList.add('fa-chevron-down');
+            }
+        }
+
+        function showToast(message, type = "success") {
+            const toast = document.getElementById('toast-message');
+            const toastText = document.getElementById('toast-text');
+            const iconBox = document.getElementById('toast-icon-box');
+
+            toastText.innerText = message;
+            if (type === "success") iconBox.innerHTML = '<i class="fa-solid fa-circle-check text-teen-emerald text-lg"></i>';
+            else iconBox.innerHTML = '<i class="fa-solid fa-circle-xmark text-teen-pink text-lg"></i>';
+
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => { toast.classList.add('translate-y-24', 'opacity-0'); }, 3000);
+        }
+
+        function openResultPage(index) {
+            const dataToPass = {
+                studentData: cacheData[index],
+                userAnswers: cacheData[index].answers,
+                questions: window.questions
+            };
+
+            const encodedData = encodeURIComponent(JSON.stringify(dataToPass));
+            window.open('result.html?data=' + encodedData, '_blank');
+        }
+
+        window.onload = fetchAdminData;
+    </script>
+</body>
+
+</html>
