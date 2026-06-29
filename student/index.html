@@ -167,11 +167,11 @@
             </div>
 
             <div class="flex justify-center gap-2 sm:gap-3 my-4">
-                <input type="text" maxlength="1" oninput="digitInputHandler(this, 0)" onkeydown="digitKeyHandler(event, 0)" class="digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm" pattern="[0-9]" inputmode="numeric">
-                <input type="text" maxlength="1" oninput="digitInputHandler(this, 1)" onkeydown="digitKeyHandler(event, 1)" class="digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm" pattern="[0-9]" inputmode="numeric">
-                <input type="text" maxlength="1" oninput="digitInputHandler(this, 2)" onkeydown="digitKeyHandler(event, 2)" class="digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm" pattern="[0-9]" inputmode="numeric">
-                <input type="text" maxlength="1" oninput="digitInputHandler(this, 3)" onkeydown="digitKeyHandler(event, 3)" class="digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm" pattern="[0-9]" inputmode="numeric">
-                <input type="text" maxlength="1" oninput="digitInputHandler(this, 4)" onkeydown="digitKeyHandler(event, 4)" class="digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm" pattern="[0-9]" inputmode="numeric">
+                <input type="text" maxlength="1" oninput="digitInputHandler(this, 0)" onkeydown="digitKeyHandler(event, 0)" class="digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm uppercase">
+                <input type="text" maxlength="1" oninput="digitInputHandler(this, 1)" onkeydown="digitKeyHandler(event, 1)" class="digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm uppercase">
+                <input type="text" maxlength="1" oninput="digitInputHandler(this, 2)" onkeydown="digitKeyHandler(event, 2)" class="digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm uppercase">
+                <input type="text" maxlength="1" oninput="digitInputHandler(this, 3)" onkeydown="digitKeyHandler(event, 3)" class="digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm uppercase">
+                <input type="text" maxlength="1" oninput="digitInputHandler(this, 4)" onkeydown="digitKeyHandler(event, 4)" class="digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm uppercase">
             </div>
 
             <button onclick="submitUniqueCode()"
@@ -826,7 +826,7 @@
         }
 
         function digitInputHandler(input, idx) {
-            input.value = input.value.replace(/[^0-9]/g, '');
+            input.value = input.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
             if (input.value && idx < 4) {
                 const boxes = document.querySelectorAll('#screen-auth .digit-box');
                 if (boxes[idx + 1]) boxes[idx + 1].focus();
@@ -848,7 +848,7 @@
             boxes.forEach(box => code += box.value);
 
             if (code.length !== 5) {
-                showToast("Kode unik harus berupa 5 digit angka! 🔢", "error");
+                showToast("Kode unik harus terdiri dari 5 digit huruf atau angka! 🔑", "error");
                 return;
             }
 

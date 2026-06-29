@@ -51,11 +51,11 @@
             </div>
 
             <div class="flex justify-center gap-2 sm:gap-3 my-4">
-                <input type="text" maxlength="1" oninput="adminDigitInputHandler(this, 0)" onkeydown="adminDigitKeyHandler(event, 0)" class="admin-digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm" pattern="[0-9]" inputmode="numeric">
-                <input type="text" maxlength="1" oninput="adminDigitInputHandler(this, 1)" onkeydown="adminDigitKeyHandler(event, 1)" class="admin-digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm" pattern="[0-9]" inputmode="numeric">
-                <input type="text" maxlength="1" oninput="adminDigitInputHandler(this, 2)" onkeydown="adminDigitKeyHandler(event, 2)" class="admin-digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm" pattern="[0-9]" inputmode="numeric">
-                <input type="text" maxlength="1" oninput="adminDigitInputHandler(this, 3)" onkeydown="adminDigitKeyHandler(event, 3)" class="admin-digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm" pattern="[0-9]" inputmode="numeric">
-                <input type="text" maxlength="1" oninput="adminDigitInputHandler(this, 4)" onkeydown="adminDigitKeyHandler(event, 4)" class="admin-digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm" pattern="[0-9]" inputmode="numeric">
+                <input type="text" maxlength="1" oninput="adminDigitInputHandler(this, 0)" onkeydown="adminDigitKeyHandler(event, 0)" class="admin-digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm uppercase">
+                <input type="text" maxlength="1" oninput="adminDigitInputHandler(this, 1)" onkeydown="adminDigitKeyHandler(event, 1)" class="admin-digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm uppercase">
+                <input type="text" maxlength="1" oninput="adminDigitInputHandler(this, 2)" onkeydown="adminDigitKeyHandler(event, 2)" class="admin-digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm uppercase">
+                <input type="text" maxlength="1" oninput="adminDigitInputHandler(this, 3)" onkeydown="adminDigitKeyHandler(event, 3)" class="admin-digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm uppercase">
+                <input type="text" maxlength="1" oninput="adminDigitInputHandler(this, 4)" onkeydown="adminDigitKeyHandler(event, 4)" class="admin-digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm uppercase">
             </div>
 
             <button onclick="submitAdminCode()"
@@ -224,7 +224,7 @@
         };
 
         function adminDigitInputHandler(input, idx) {
-            input.value = input.value.replace(/[^0-9]/g, '');
+            input.value = input.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
             if (input.value && idx < 4) {
                 const boxes = document.querySelectorAll('#admin-auth .admin-digit-box');
                 if (boxes[idx + 1]) boxes[idx + 1].focus();
@@ -246,7 +246,7 @@
             boxes.forEach(box => code += box.value);
 
             if (code.length !== 5) {
-                showToast("Kode unik harus berupa 5 digit angka! 🔢", "error");
+                showToast("Kode unik harus terdiri dari 5 digit huruf atau angka! 🔑", "error");
                 return;
             }
 
@@ -343,10 +343,10 @@
             const selectedJurusan = document.getElementById('filter-jurusan').value;
             const selectedKelas = document.getElementById('filter-kelas').value;
 
-            // Filter first by active Kode Unik
+            // Filter first by active Kode Unik (case-insensitive)
             let finalFilteredData = cacheData.filter(item => {
-                const rowCode = item.kodeUnik ? String(item.kodeUnik).trim() : "";
-                return rowCode === currentAdminCode;
+                const rowCode = item.kodeUnik ? String(item.kodeUnik).trim().toUpperCase() : "";
+                return rowCode === currentAdminCode.toUpperCase();
             });
 
             if (selectedJurusan !== "ALL") {
