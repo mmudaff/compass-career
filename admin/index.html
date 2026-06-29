@@ -37,11 +37,40 @@
 
 <body class="bg-slate-50 min-h-screen font-sans antialiased pb-12">
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+    <!-- PASSCODE WALL FOR ADMIN -->
+    <div id="admin-auth" class="min-h-[80vh] flex items-center justify-center p-4">
+        <div class="bg-white/95 p-8 sm:p-10 rounded-[2rem] shadow-xl border border-slate-100/80 max-w-md w-full text-center space-y-6">
+            <div class="bg-gradient-to-tr from-teen-accent to-teen-pink text-white w-14 h-14 rounded-2xl shadow-lg flex items-center justify-center mx-auto mb-2">
+                <i class="fa-solid fa-lock text-2xl animate-pulse"></i>
+            </div>
+            <div class="space-y-2">
+                <h2 class="font-syne text-2xl font-extrabold text-slate-900 leading-tight">Dashboard Admin</h2>
+                <p class="text-slate-500 text-xs sm:text-sm font-semibold leading-relaxed">
+                    Masukkan 5 digit kode unik siswa/kelas untuk memantau hasil asesmen.
+                </p>
+            </div>
+
+            <div class="flex justify-center gap-2 sm:gap-3 my-4">
+                <input type="text" maxlength="1" oninput="adminDigitInputHandler(this, 0)" onkeydown="adminDigitKeyHandler(event, 0)" class="admin-digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm" pattern="[0-9]" inputmode="numeric">
+                <input type="text" maxlength="1" oninput="adminDigitInputHandler(this, 1)" onkeydown="adminDigitKeyHandler(event, 1)" class="admin-digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm" pattern="[0-9]" inputmode="numeric">
+                <input type="text" maxlength="1" oninput="adminDigitInputHandler(this, 2)" onkeydown="adminDigitKeyHandler(event, 2)" class="admin-digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm" pattern="[0-9]" inputmode="numeric">
+                <input type="text" maxlength="1" oninput="adminDigitInputHandler(this, 3)" onkeydown="adminDigitKeyHandler(event, 3)" class="admin-digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm" pattern="[0-9]" inputmode="numeric">
+                <input type="text" maxlength="1" oninput="adminDigitInputHandler(this, 4)" onkeydown="adminDigitKeyHandler(event, 4)" class="admin-digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm" pattern="[0-9]" inputmode="numeric">
+            </div>
+
+            <button onclick="submitAdminCode()"
+                class="bg-gradient-to-r from-teen-accent to-teen-pink text-white font-extrabold py-3.5 px-10 rounded-2xl shadow-lg hover:shadow-xl hover:shadow-indigo-200 transition duration-300 transform hover:-translate-y-0.5 w-full flex items-center justify-center gap-2 text-sm sm:text-base">
+                Lihat Hasil <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD (HIDDEN BY DEFAULT) -->
+    <div id="admin-dashboard" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
 
         <div
             class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-slate-200 pb-6 mb-8 gap-4">
-            <div class="flex items-center gap-3.5">
+            <div class="flex items-center gap-3.5 flex-wrap">
                 <div
                     class="bg-gradient-to-tr from-teen-accent to-teen-pink text-white w-11 h-11 rounded-2xl shadow-lg shadow-indigo-100 flex items-center justify-center shrink-0">
                     <i class="fa-solid fa-rocket text-base animate-bounce"></i>
@@ -51,8 +80,16 @@
                         class="font-syne font-extrabold text-2xl tracking-tight bg-gradient-to-r from-teen-accent to-teen-pink bg-clip-text text-transparent leading-tight">
                         CompassKarir Admin
                     </h1>
-                    <p class="text-slate-500 text-xs mt-0.5 font-medium">Dashboard Pemantauan Hasil Analisis RIASEC
-                        Siswa</p>
+                    <p class="text-slate-500 text-xs mt-0.5 font-medium">Dashboard Pemantauan Hasil Analisis RIASEC Siswa</p>
+                </div>
+                <!-- Active Code Badge -->
+                <div class="flex items-center gap-2 ml-0 sm:ml-4 mt-2 sm:mt-0">
+                    <span id="active-code-badge" class="px-3 py-1 bg-indigo-50 text-indigo-700 border border-indigo-100 text-xs font-bold rounded-full shadow-sm">
+                        Kode Unik: -----
+                    </span>
+                    <button onclick="changeAdminCode()" class="text-slate-400 hover:text-rose-500 text-xs font-bold bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-100 px-3 py-1 rounded-xl transition duration-150 flex items-center gap-1">
+                        <i class="fa-solid fa-right-from-bracket"></i> Ganti Kode
+                    </button>
                 </div>
             </div>
 
@@ -130,6 +167,7 @@
     <script>
         const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyqpzwe9Azpbg_pD0D37VtA3_-AexdOkuCtK-H8qvUGpraJtcl3_cevkYEjdfzFFsOY/exec";
         let cacheData = [];
+        let currentAdminCode = "";
 
         const SOAL_RIASEC = [
             "Saya lebih suka mengikuti ekstrakurikuler yang melibatkan aktivitas fisik di luar ruangan.",
@@ -184,6 +222,61 @@
             4: "Boleh Juga",
             5: "Gue Banget"
         };
+
+        function adminDigitInputHandler(input, idx) {
+            input.value = input.value.replace(/[^0-9]/g, '');
+            if (input.value && idx < 4) {
+                const boxes = document.querySelectorAll('#admin-auth .admin-digit-box');
+                if (boxes[idx + 1]) boxes[idx + 1].focus();
+            }
+        }
+
+        function adminDigitKeyHandler(e, idx) {
+            if (e.key === 'Backspace' && !e.target.value && idx > 0) {
+                const boxes = document.querySelectorAll('#admin-auth .admin-digit-box');
+                if (boxes[idx - 1]) {
+                    boxes[idx - 1].focus();
+                }
+            }
+        }
+
+        function submitAdminCode() {
+            const boxes = document.querySelectorAll('#admin-auth .admin-digit-box');
+            let code = "";
+            boxes.forEach(box => code += box.value);
+
+            if (code.length !== 5) {
+                showToast("Kode unik harus berupa 5 digit angka! 🔢", "error");
+                return;
+            }
+
+            currentAdminCode = code;
+
+            // Show dashboard and hide passcode wall
+            document.getElementById('admin-auth').classList.add('hidden');
+            document.getElementById('admin-dashboard').classList.remove('hidden');
+
+            // Update title badge for active code
+            document.getElementById('active-code-badge').innerText = `Kode Unik: ${currentAdminCode}`;
+
+            // Apply filter and render table
+            applyCombinedFilter();
+            showToast(`Berhasil masuk! Memantau kode unik: ${currentAdminCode} 🔑`, "success");
+        }
+
+        function changeAdminCode() {
+            currentAdminCode = "";
+            // Clear boxes
+            const boxes = document.querySelectorAll('#admin-auth .admin-digit-box');
+            boxes.forEach(box => box.value = "");
+
+            // Hide dashboard, show passcode wall
+            document.getElementById('admin-dashboard').classList.add('hidden');
+            document.getElementById('admin-auth').classList.remove('hidden');
+            
+            // Focus on first box
+            if (boxes[0]) boxes[0].focus();
+        }
 
         function fetchAdminData() {
             document.getElementById('loading-state').style.display = 'flex';
@@ -245,10 +338,16 @@
         }
 
         function applyCombinedFilter() {
+            if (!currentAdminCode) return;
+
             const selectedJurusan = document.getElementById('filter-jurusan').value;
             const selectedKelas = document.getElementById('filter-kelas').value;
 
-            let finalFilteredData = cacheData;
+            // Filter first by active Kode Unik
+            let finalFilteredData = cacheData.filter(item => {
+                const rowCode = item.kodeUnik ? String(item.kodeUnik).trim() : "";
+                return rowCode === currentAdminCode;
+            });
 
             if (selectedJurusan !== "ALL") {
                 finalFilteredData = finalFilteredData.filter(item => item.jurusan && item.jurusan.toString().trim() === selectedJurusan);
@@ -270,6 +369,7 @@
             }
 
             data.forEach((row, rowIndex) => {
+                const originalIndex = cacheData.indexOf(row);
                 const formattedDate = new Date(row.timestamp).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
                 const kelasRaw = row.kelas ? row.kelas.toString().trim() : '-';
                 const kelasUpper = kelasRaw.toUpperCase();
@@ -302,7 +402,7 @@
                             <i id="icon-btn-${rowIndex}" class="fa-solid fa-chevron-down text-xs"></i>
                         </button>
                         
-                        <button onclick="openResultPage(${rowIndex})" class="bg-slate-100 hover:bg-teen-pink text-slate-600 hover:text-white w-8 h-8 rounded-lg transition-all flex items-center justify-center" title="Lihat Hasil Detail">
+                        <button onclick="openResultPage(${originalIndex})" class="bg-slate-100 hover:bg-teen-pink text-slate-600 hover:text-white w-8 h-8 rounded-lg transition-all flex items-center justify-center" title="Lihat Hasil Detail">
     <i class="fa-solid fa-chart-line text-xs"></i>
 </button>
                     </div>

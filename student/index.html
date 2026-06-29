@@ -153,8 +153,35 @@
 
     <main class="flex-grow max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col justify-center">
 
+        <!-- SCREEN AUTH (5-DIGIT CODE) -->
+        <section id="screen-auth"
+            class="fade-in flex flex-col items-center justify-center space-y-8 bg-white/95 p-8 sm:p-12 rounded-[2rem] shadow-xl border border-slate-100/80 glass-card max-w-md mx-auto w-full">
+            <div class="text-center max-w-sm mx-auto space-y-4">
+                <div class="bg-gradient-to-tr from-teen-accent to-teen-pink text-white w-14 h-14 rounded-2xl shadow-lg flex items-center justify-center mx-auto mb-2">
+                    <i class="fa-solid fa-key text-2xl animate-pulse"></i>
+                </div>
+                <h2 class="font-syne text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">Kode Unik Asesmen</h2>
+                <p class="text-slate-500 text-xs sm:text-sm font-semibold leading-relaxed">
+                    Masukkan 5 digit kode unik untuk memulai atau melanjutkan asesmen Anda.
+                </p>
+            </div>
+
+            <div class="flex justify-center gap-2 sm:gap-3 my-4">
+                <input type="text" maxlength="1" oninput="digitInputHandler(this, 0)" onkeydown="digitKeyHandler(event, 0)" class="digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm" pattern="[0-9]" inputmode="numeric">
+                <input type="text" maxlength="1" oninput="digitInputHandler(this, 1)" onkeydown="digitKeyHandler(event, 1)" class="digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm" pattern="[0-9]" inputmode="numeric">
+                <input type="text" maxlength="1" oninput="digitInputHandler(this, 2)" onkeydown="digitKeyHandler(event, 2)" class="digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm" pattern="[0-9]" inputmode="numeric">
+                <input type="text" maxlength="1" oninput="digitInputHandler(this, 3)" onkeydown="digitKeyHandler(event, 3)" class="digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm" pattern="[0-9]" inputmode="numeric">
+                <input type="text" maxlength="1" oninput="digitInputHandler(this, 4)" onkeydown="digitKeyHandler(event, 4)" class="digit-box w-12 h-14 text-center text-2xl font-extrabold text-slate-800 border-2 border-slate-200 rounded-xl focus:border-teen-accent focus:ring-4 focus:ring-indigo-100 outline-none transition-all shadow-sm" pattern="[0-9]" inputmode="numeric">
+            </div>
+
+            <button onclick="submitUniqueCode()"
+                class="bg-gradient-to-r from-teen-accent to-teen-pink text-white font-extrabold py-3.5 px-10 rounded-2xl shadow-lg hover:shadow-xl hover:shadow-indigo-200 transition duration-300 transform hover:-translate-y-0.5 w-full flex items-center justify-center gap-2 text-sm sm:text-base">
+                Mulai Asesmen <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </section>
+
         <section id="screen-welcome"
-            class="fade-in space-y-8 bg-white/95 p-8 sm:p-12 rounded-[2rem] shadow-xl border border-slate-100/80 glass-card">
+            class="hidden fade-in space-y-8 bg-white/95 p-8 sm:p-12 rounded-[2rem] shadow-xl border border-slate-100/80 glass-card">
             <div class="text-center max-w-2xl mx-auto space-y-5">
                 <span
                     class="px-4 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-indigo-500/10 to-pink-500/10 text-indigo-600 border border-indigo-100 uppercase tracking-widest inline-block animate-pulse">
@@ -764,7 +791,7 @@
 
         let userAnswers = {}; // {question_id: 1..5}
         let currentIndex = 0;
-        let studentData = { nama: "", kelas: "", jurusan: "", sekolah: "", tanggal: "" };
+        let studentData = { kodeUnik: "", nama: "", kelas: "", jurusan: "", sekolah: "", tanggal: "" };
         let chartInstance = null;
 
         window.onload = function () {
@@ -778,6 +805,7 @@
         };
 
         function changeScreen(screenId) {
+            document.getElementById('screen-auth').classList.add('hidden');
             document.getElementById('screen-welcome').classList.add('hidden');
             document.getElementById('screen-instructions').classList.add('hidden');
             document.getElementById('screen-biodata').classList.add('hidden');
@@ -795,6 +823,39 @@
             }
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function digitInputHandler(input, idx) {
+            input.value = input.value.replace(/[^0-9]/g, '');
+            if (input.value && idx < 4) {
+                const boxes = document.querySelectorAll('#screen-auth .digit-box');
+                if (boxes[idx + 1]) boxes[idx + 1].focus();
+            }
+        }
+
+        function digitKeyHandler(e, idx) {
+            if (e.key === 'Backspace' && !e.target.value && idx > 0) {
+                const boxes = document.querySelectorAll('#screen-auth .digit-box');
+                if (boxes[idx - 1]) {
+                    boxes[idx - 1].focus();
+                }
+            }
+        }
+
+        function submitUniqueCode() {
+            const boxes = document.querySelectorAll('#screen-auth .digit-box');
+            let code = "";
+            boxes.forEach(box => code += box.value);
+
+            if (code.length !== 5) {
+                showToast("Kode unik harus berupa 5 digit angka! 🔢", "error");
+                return;
+            }
+
+            studentData.kodeUnik = code;
+            saveStateToLocal();
+            changeScreen('screen-welcome');
+            showToast("Kode unik berhasil dikonfirmasi! Selamat datang. ✨", "success");
         }
 
         function handleBiodataSubmit(e) {
@@ -1148,25 +1209,36 @@
                 if (!data) return;
 
                 const parsed = JSON.parse(data);
-                if (parsed.studentData && parsed.studentData.nama) {
+                if (parsed.studentData) {
                     studentData = parsed.studentData;
                     userAnswers = parsed.userAnswers || {};
                     currentIndex = parsed.currentIndex || 0;
 
-                    document.getElementById('input-nama').value = studentData.nama || "";
-                    document.getElementById('input-kelas').value = studentData.kelas || "";
-                    document.getElementById('input-jurusan').value = studentData.jurusan || "";
-                    document.getElementById('input-sekolah').value = studentData.sekolah || "";
-                    if (studentData.tanggal) {
-                        document.getElementById('input-tanggal').value = studentData.tanggal;
+                    if (studentData.kodeUnik) {
+                        const boxes = document.querySelectorAll('#screen-auth .digit-box');
+                        for (let i = 0; i < 5; i++) {
+                            if (boxes[i]) boxes[i].value = studentData.kodeUnik[i] || "";
+                        }
                     }
 
-                    changeScreen('screen-test');
-                    setTimeout(() => {
-                        setupGridQuestionTiles();
-                        loadQuestion(currentIndex);
-                    }, 100);
-                    showToast(`Sesi sebelumnya dipulihkan! Lanjut kerjakan, ${studentData.nama}! ✨`);
+                    if (studentData.nama) {
+                        document.getElementById('input-nama').value = studentData.nama || "";
+                        document.getElementById('input-kelas').value = studentData.kelas || "";
+                        document.getElementById('input-jurusan').value = studentData.jurusan || "";
+                        document.getElementById('input-sekolah').value = studentData.sekolah || "";
+                        if (studentData.tanggal) {
+                            document.getElementById('input-tanggal').value = studentData.tanggal;
+                        }
+
+                        changeScreen('screen-test');
+                        setTimeout(() => {
+                            setupGridQuestionTiles();
+                            loadQuestion(currentIndex);
+                        }, 100);
+                        showToast(`Sesi sebelumnya dipulihkan! Lanjut kerjakan, ${studentData.nama}! ✨`);
+                    } else if (studentData.kodeUnik) {
+                        changeScreen('screen-welcome');
+                    }
                 }
             } catch (e) {
                 console.warn(e);
@@ -1192,7 +1264,7 @@
         function executeReset() {
             userAnswers = {};
             currentIndex = 0;
-            studentData = { nama: "", kelas: "", jurusan: "", sekolah: "", tanggal: new Date().toISOString().split('T')[0] };
+            studentData = { kodeUnik: "", nama: "", kelas: "", jurusan: "", sekolah: "", tanggal: new Date().toISOString().split('T')[0] };
 
             document.getElementById('input-nama').value = "";
             document.getElementById('input-kelas').value = "";
@@ -1200,9 +1272,12 @@
             document.getElementById('input-sekolah').value = "";
             document.getElementById('input-tanggal').value = studentData.tanggal;
 
+            const boxes = document.querySelectorAll('#screen-auth .digit-box');
+            boxes.forEach(box => box.value = "");
+
             localStorage.removeItem('compasskarir_riasec_state_v2');
-            changeScreen('screen-welcome');
-            showToast("Sesi berhasil di-reset. Mari mulai dengan segar! 🌱");
+            changeScreen('screen-auth');
+            showToast("Sesi berhasil di-reset. Silakan masukkan kode unik baru! 🌱");
         }
 
         function showToast(message, type = "success") {
@@ -1229,6 +1304,7 @@
             try {
                 const answersArray = Object.keys(userAnswers).sort((a, b) => a - b).map(key => userAnswers[key]);
                 const payload = {
+                    kodeUnik: studentData.kodeUnik || "",
                     nama: studentData.nama,
                     kelas: studentData.kelas,
                     jurusan: studentData.jurusan,
