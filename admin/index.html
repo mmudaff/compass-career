@@ -250,7 +250,7 @@
                 return;
             }
 
-            currentAdminCode = code;
+            currentAdminCode = code.toUpperCase();
 
             // Show dashboard and hide passcode wall
             document.getElementById('admin-auth').classList.add('hidden');
@@ -259,9 +259,9 @@
             // Update title badge for active code
             document.getElementById('active-code-badge').innerText = `Kode Unik: ${currentAdminCode}`;
 
-            // Apply filter and render table
-            applyCombinedFilter();
-            showToast(`Berhasil masuk! Memantau kode unik: ${currentAdminCode} 🔑`, "success");
+            // Fetch fresh data THEN apply filter and render table
+            fetchAdminData();
+            showToast(`Memuat data untuk kode: ${currentAdminCode}... 🔑`, "success");
         }
 
         function changeAdminCode() {
@@ -287,18 +287,26 @@
                 redirect: 'follow'
             })
                 .then(res => {
-                    if (!res.ok) throw new Error("Gagal mengambil data dari server");
+                    if (!res.ok) throw new Error("Gagal mengambil data dari server (status: " + res.status + ")");
                     return res.json();
                 })
                 .then(data => {
-                    cacheData = data;
-                    populateJurusanOptions(data);
+                    // Normalize: support both 'kodeUnik' and 'kode' field names from Apps Script
+                    cacheData = data.map(item => ({
+                        ...item,
+                        kodeUnik: (item.kodeUnik || item.kode || item.Kode || "").toString().trim().toUpperCase()
+                    }));
+                    populateJurusanOptions(cacheData);
                     updateKelasOptions();
-                    showToast("Data dashboard berhasil diperbarui! 🔄", "success");
+                    applyCombinedFilter();
+                    showToast("Data berhasil dimuat! 📥", "success");
                 })
                 .catch(err => {
                     console.error(err);
-                    showToast("Error: " + err.message, "error");
+                    document.getElementById('loading-state').style.display = 'none';
+                    document.getElementById('table-container').style.display = 'block';
+                    document.getElementById('table-body').innerHTML = `<tr><td colspan="6" class="p-12 text-center text-rose-500 font-semibold">❌ Gagal memuat data: ${err.message}</td></tr>`;
+                    showToast("Gagal memuat data: " + err.message, "error");
                 });
         }
 
@@ -500,7 +508,8 @@
             window.open('result.html?data=' + encodedData, '_blank');
         }
 
-        window.onload = fetchAdminData;
+        // Data is loaded on-demand after admin enters their code — NOT on page load.
+        // window.onload is intentionally not calling fetchAdminData here.
     </script>
 </body>
 
