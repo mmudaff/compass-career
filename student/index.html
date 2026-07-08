@@ -503,128 +503,50 @@
             </div>
         </section>
 
-        <section id="screen-results" class="hidden fade-in space-y-8">
-            <div
-                class="bg-gradient-to-tr from-teen-deep via-slate-900 to-indigo-950 text-white rounded-[2.5rem] p-8 sm:p-10 shadow-2xl relative overflow-hidden">
-                <div
-                    class="absolute right-0 bottom-0 translate-x-8 translate-y-8 opacity-[0.04] text-[200px] font-black font-syne select-none pointer-events-none">
-                    CAREER
-                </div>
-                <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                    <div>
-                        <span
-                            class="px-3.5 py-1 bg-white/10 text-teen-cyan rounded-full text-xs font-bold tracking-widest uppercase border border-white/10">
-                            ✨ Karirmu Terungkap!
-                        </span>
-                        <h2 class="text-3xl sm:text-4xl font-extrabold mt-3 font-syne text-white tracking-tight">Peta
-                            Kekuatan Karirmu</h2>
+        <section id="screen-results" class="hidden fade-in flex flex-col items-center justify-center py-8">
+            <div class="bg-white/95 glass-card rounded-[2.5rem] shadow-2xl border border-slate-100/80 p-10 sm:p-14 max-w-xl w-full text-center space-y-8 mx-auto">
 
-                        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-xs text-slate-300">
-                            <div><span class="text-slate-400 font-semibold uppercase tracking-wider mr-1">Nama:</span>
-                                <span id="res-nama" class="font-bold text-white text-sm"></span>
-                            </div>
-                            <div><span class="text-slate-400 font-semibold uppercase tracking-wider mr-1">Kelas /
-                                    Jurusan:</span> <span id="res-kelas-jurusan"
-                                    class="font-bold text-white text-sm"></span></div>
-                            <div><span
-                                    class="text-slate-400 font-semibold uppercase tracking-wider mr-1">Sekolah:</span>
-                                <span id="res-sekolah" class="font-bold text-white text-sm"></span>
-                            </div>
-                            <div><span class="text-slate-400 font-semibold uppercase tracking-wider mr-1">Tanggal
-                                    Pelaksanaan:</span> <span id="res-tanggal"
-                                    class="font-bold text-white text-sm"></span></div>
-                        </div>
-                    </div>
-
-                    <div
-                        class="bg-white/10 backdrop-blur-md p-6 rounded-3xl border border-white/10 text-center w-full md:w-auto flex-shrink-0">
-                        <span class="text-slate-300 text-[10px] font-bold uppercase tracking-widest block mb-1">Tipe
-                            Dominan</span>
-                        <span id="dominant-code"
-                            class="text-4xl font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-teen-cyan via-teen-pink to-teen-amber font-syne">R-I-A</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div
-                    class="lg:col-span-7 bg-white p-6 sm:p-8 rounded-[2rem] shadow-xl border border-slate-100 flex flex-col justify-between">
-                    <div>
-                        <h3 class="font-syne font-extrabold text-slate-900 text-lg">Diagram Karakter RIASEC</h3>
-                        <p class="text-xs text-slate-400">Peta visual skor kecenderungan minat belajarmu.</p>
-                    </div>
-                    <div class="my-6 h-64 sm:h-72 relative flex items-center justify-center">
-                        <canvas id="riasec-radar-chart"></canvas>
-                    </div>
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-center">
-                        <p class="text-[10px] text-slate-400 font-medium italic">Skor maksimal per kategori adalah 35
-                            poin.</p>
+                <!-- Icon -->
+                <div class="flex justify-center">
+                    <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-teen-accent via-teen-pink to-teen-cyan flex items-center justify-center shadow-xl shadow-indigo-200">
+                        <i class="fa-solid fa-circle-check text-white text-5xl"></i>
                     </div>
                 </div>
 
-                <div
-                    class="lg:col-span-5 bg-white p-6 sm:p-8 rounded-[2rem] shadow-xl border border-slate-100 flex flex-col justify-between">
-                    <div>
-                        <h3 class="font-syne font-extrabold text-slate-900 text-lg mb-1">Skor Kamu</h3>
-                        <p class="text-xs text-slate-400 mb-4">Urutan kecocokan kategori minatmu:</p>
-                    </div>
-                    <div id="scores-list" class="space-y-4 flex-grow flex flex-col justify-center">
-                    </div>
-                </div>
-            </div>
+                <!-- Badge -->
+                <span class="inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-indigo-500/10 to-pink-500/10 text-indigo-600 border border-indigo-100 uppercase tracking-widest animate-pulse">
+                    ✅ Asesmen Selesai!
+                </span>
 
-            <div class="bg-white p-6 sm:p-10 rounded-[2.5rem] shadow-xl border border-slate-100 space-y-8">
-                <div class="border-b border-slate-100 pb-5">
-                    <h3 class="font-syne font-extrabold text-slate-900 text-2xl flex items-center gap-2">
-                        🌟 Analisis Minat & Karir Terkece
-                    </h3>
-                    <p class="text-sm text-slate-500">Membaca potensi dominanmu dalam belajar dan berkarir nanti.</p>
+                <!-- Heading -->
+                <div class="space-y-4">
+                    <h2 class="font-syne text-2xl sm:text-3xl font-extrabold text-slate-900 leading-snug">
+                        Terima Kasih, <span id="res-nama-thanks" class="gradient-text"></span>! 🎉
+                    </h2>
+                    <p class="text-slate-600 text-sm sm:text-base leading-relaxed font-medium max-w-md mx-auto">
+                        Terima kasih telah mengisi <strong>Inventori Minat Karir</strong> dengan teliti dan bersungguh-sungguh. Untuk penjelasan hasil dan arahan lebih lanjut, silakan berkonsultasi dengan <strong>Guru BK</strong>.
+                    </p>
                 </div>
 
-                <div id="profile-detailed-descriptions" class="space-y-6">
+                <!-- Divider -->
+                <div class="w-16 h-1 rounded-full bg-gradient-to-r from-teen-accent to-teen-pink mx-auto"></div>
+
+                <!-- Info pill -->
+                <div class="bg-indigo-50/60 border border-indigo-100 rounded-2xl px-6 py-4 text-xs text-indigo-700 font-semibold flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-circle-info text-teen-accent"></i>
+                    Jawabanmu telah berhasil tersimpan dan siap dianalisis oleh Guru BK.
                 </div>
 
-                <div class="bg-indigo-50/40 rounded-3xl p-6 sm:p-8 border border-indigo-100/50">
-                    <h4 class="font-syne font-extrabold text-slate-900 text-base mb-4 flex items-center gap-2">
-                        🚀 Bidang Pekerjaan & Jurusan Kuliah Terpilih:
-                    </h4>
-                    <div id="career-recommendation-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    </div>
-                </div>
-            </div>
-
-            <div
-                class="hidden print:grid bg-white pt-10 border-t border-slate-200 grid-cols-2 gap-8 text-center mt-12 text-sm">
-                <div>
-                    <p class="mb-16 font-semibold">Konselor / Guru BK</p>
-                    <div class="w-48 mx-auto border-b border-slate-800"></div>
-                    <p class="text-xs text-slate-400 mt-1">NIP/Nama Jelas</p>
-                </div>
-                <div>
-                    <p class="mb-16 font-semibold">Siswa Peserta</p>
-                    <div id="print-signature-student-name" class="w-48 mx-auto border-b border-slate-800 font-bold">
-                    </div>
-                    <p class="text-xs text-slate-400 mt-1">Tanda Tangan & Nama Lengkap</p>
-                </div>
-            </div>
-
-            <div
-                class="flex flex-col sm:flex-row gap-4 justify-between items-center bg-slate-100/60 p-4 rounded-3xl no-print">
+                <!-- Reset Button -->
                 <button onclick="confirmReset()"
-                    class="text-slate-500 hover:text-rose-500 font-bold py-2.5 px-5 rounded-xl transition duration-150 inline-flex items-center gap-1.5 text-xs uppercase tracking-wider">
-                    <i class="fa-solid fa-trash-can"></i> Ulangi Tes
+                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-teen-accent to-teen-pink text-white font-extrabold py-3.5 px-10 rounded-2xl shadow-lg hover:shadow-xl hover:shadow-indigo-200 transition duration-300 transform hover:-translate-y-0.5 text-sm sm:text-base">
+                    <i class="fa-solid fa-rotate-left"></i> Ulang Quiz
                 </button>
-                <!-- <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                    <button onclick="window.print()"
-                        class="bg-white hover:bg-slate-50 text-slate-700 font-bold py-3.5 px-6 rounded-2xl shadow-sm border border-slate-200 transition duration-150 flex items-center justify-center gap-2 text-xs uppercase tracking-wider">
-                        <i class="fa-solid fa-print"></i> Cetak PDF Laporan
-                    </button>
-                </div> -->
-            </div>
 
-            <div class="text-center text-[10px] text-slate-400 border-t border-slate-100 pt-6">
-                <p>Pengembang: <strong>Fhitrye Kartika</strong> | Kontak Resmi: <strong>fhitryek@gmail.com</strong> |
-                    Instansi: <strong>Universitas Muhammadiyah Metro</strong></p>
+                <!-- Footer credit -->
+                <p class="text-[10px] text-slate-400 pt-2">
+                    Pengembang: <strong>Fhitrye Kartika</strong> | Kontak: <strong>fhitryek@gmail.com</strong> | <strong>Universitas Muhammadiyah Metro</strong>
+                </p>
             </div>
         </section>
 
@@ -1032,39 +954,14 @@
         }
 
         function renderResultsDashboard() {
-            sendDataToGAS()
-            let scores = { Realistic: 0, Investigative: 0, Artistik: 0, Social: 0, Enterprising: 0, Conventional: 0 };
-            questions.forEach(q => {
-                scores[q.category] += parseInt(userAnswers[q.id] || 0);
-            });
+            sendDataToGAS();
 
-            // Sort profiles high-to-low
-            let sortedCategories = Object.keys(scores).map(key => {
-                return { key: key, score: scores[key], ...riasecInfo[key] };
-            }).sort((a, b) => b.score - a.score);
-
-            const dominantCode = sortedCategories.slice(0, 3).map(item => item.key[0]).join('-');
-
-            // DOM Insertion
-            document.getElementById('res-nama').innerText = studentData.nama;
-            document.getElementById('res-kelas-jurusan').innerText = `${studentData.kelas} / ${studentData.jurusan}`;
-            document.getElementById('res-sekolah').innerText = studentData.sekolah;
-
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            const parsedDate = new Date(studentData.tanggal);
-            document.getElementById('res-tanggal').innerText = isNaN(parsedDate) ? studentData.tanggal : parsedDate.toLocaleDateString('id-ID', options);
-
-            document.getElementById('dominant-code').innerText = dominantCode;
-            document.getElementById('print-signature-student-name').innerText = studentData.nama;
-
-            // Render Radar Charts & Scores visually
-            renderRadarChartVisual(scores);
-            renderDetailedBreakdownScoreBars(sortedCategories);
-            renderDominantDescriptions(sortedCategories);
-            renderStudyAndCareerRecommendations(sortedCategories);
+            // Tampilkan nama siswa di card terima kasih
+            const namaThanks = document.getElementById('res-nama-thanks');
+            if (namaThanks) namaThanks.innerText = studentData.nama || "";
 
             changeScreen('screen-results');
-            showToast("Asesmen Selesai! Lihat masa depan hebatmu! ✨", "success");
+            showToast("Asesmen selesai! Terima kasih sudah mengisi dengan sungguh-sungguh. ✨", "success");
         }
 
         function renderRadarChartVisual(scores) {
